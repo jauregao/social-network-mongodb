@@ -1,8 +1,10 @@
+import { PostController } from './controllers/PostController';
 import { Router } from "express"
 import { UserController } from "./controllers/UserController"
 
 const routes = Router()
-const userController = new UserController();
+const userController = new UserController()
+const postController = new PostController()
 
 
 routes.post('/user',
@@ -18,6 +20,10 @@ routes.patch('/user/:id/deactivate',
   userController.deactivate)
   
 routes.get('/users',
-    userController.getAll)
+  userController.getAll)
+
+
+routes.post('/feed',
+  postController.create)
 
 export default routes
