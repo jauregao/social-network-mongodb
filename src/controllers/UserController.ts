@@ -5,17 +5,16 @@ import { Types } from "mongoose"
 
 export class UserController {
 
-  async getAll(_: Request, res: Response){
+  async getAll(_: Request, res: Response): Promise<TUser[] | Object> {
     try {
       const users = await User.find()
       return res.json(users)
-
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
   }
 
-  async getOne(req: Request, res: Response) {
+  async getOne(req: Request, res: Response): Promise<TUser | Object> {
     const { id } = req.params
     
     if (!Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user ID.' })
@@ -23,7 +22,7 @@ export class UserController {
     try {
       const user = await User.findById(id)
 
-      if(user === null) return res.status(404).json({message: 'User not found.'})
+      if(!user) return res.status(404).json({message: 'User not found.'})
 
       return res.json(user)
     } catch (error) {
@@ -32,7 +31,7 @@ export class UserController {
   }
 
   
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response): Promise<void | Object>{
     const { id } = req.params
     const userData = req.body as TUser
     
@@ -41,7 +40,7 @@ export class UserController {
     try {
       const user = await User.findById(id)
 
-      if(user === null) return res.status(404).json({message: 'User not found.'})
+      if(!user) return res.status(404).json({message: 'User not found.'})
 
       const existUserMailOrUsername = await User.findOne({
         $or: [{email: userData.email, _id: { $ne: id }}, {username: userData.username, _id: { $ne: id }}]
@@ -86,6 +85,26 @@ export class UserController {
     })
     
     return res.status(201).json(newUser)
+    } catch (error) {
+      return res.status(500).json({message: 'Internal Server Error'})
+    }
+  }
+
+  async deactivate(req: Request, res: Response): Promise<void | Object>{
+    const { id } = req.params
+    
+    if (!Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user ID.' })
+
+    try {
+      const user = await User.findById(id)
+
+      if(!user) return res.status(404).json({message: 'User not found.'})
+
+      await User.updateOne( {_id: id}, {
+        isActive: false
+      })
+      
+      return res.status(204).json()
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
