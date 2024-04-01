@@ -10,6 +10,9 @@ routes.post('/user',
 
 routes.get('/user/:id',
   userController.getOne)
+
+routes.put('/user/:id',
+  userController.update)
   
 routes.get('/users',
     userController.getAll)

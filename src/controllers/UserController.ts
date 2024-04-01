@@ -22,15 +22,45 @@ export class UserController {
 
     try {
       const user = await User.findById(id)
-      console.log("Usuário encontrado:", user);
 
       if(user === null) return res.status(404).json({message: 'User not found.'})
 
       return res.json(user)
     } catch (error) {
-      console.error("Erro ao buscar usuário:", error)
       return res.status(500).json({message: 'Internal Server Error'})
-      
+    }
+  }
+
+  
+  async update(req: Request, res: Response) {
+    const { id } = req.params
+    const userData = req.body as TUser
+    
+    if (!Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user ID.' })
+
+    try {
+      const user = await User.findById(id)
+
+      if(user === null) return res.status(404).json({message: 'User not found.'})
+
+      const existUserMailOrUsername = await User.findOne({
+        $or: [{email: userData.email, _id: { $ne: id }}, {username: userData.username, _id: { $ne: id }}]
+      })
+
+      if(existUserMailOrUsername) return res.status(400).json({messaage: 'User or email already exists.'})
+
+      await User.updateOne(
+      {_id: id}, {
+      name: userData.name,
+      email: userData.email,
+      username: userData.username,
+      photo: userData.photo,
+      description: userData.description
+    })
+    
+    return res.status(204).json()
+    } catch (error) {
+      return res.status(500).json({message: 'Internal Server Error'})
     }
   }
 
@@ -60,5 +90,4 @@ export class UserController {
       return res.status(500).json({message: 'Internal Server Error'})
     }
   }
-
 }
