@@ -1,4 +1,4 @@
-import { Request, Response, query } from "express"
+import { Request, Response } from "express"
 import User from "../models/User"
 import { TUser } from "../types"
 import { Types } from "mongoose"
