@@ -6,7 +6,7 @@ const routes = Router()
 const userController = new UserController()
 const postController = new PostController()
 
-
+  /* users routes */
 routes.post('/user',
   userController.create)
 
@@ -22,7 +22,7 @@ routes.patch('/user/:id/deactivate',
 routes.get('/users',
   userController.getAll)
 
-
+  /* post routes */
 routes.post('/feed',
   postController.create)
 
@@ -31,5 +31,11 @@ routes.get('/feed',
 
 routes.get('/feed/:id',
   postController.getOne)
+
+routes.patch('/feed/:id',
+  postController.update)
+
+  routes.delete('/feed/:id',
+  postController.delete)
 
 export default routes
