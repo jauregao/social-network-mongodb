@@ -26,4 +26,10 @@ routes.get('/users',
 routes.post('/feed',
   postController.create)
 
+routes.get('/feed',
+  postController.getAll)
+
+routes.get('/feed/:id',
+  postController.getOne)
+
 export default routes

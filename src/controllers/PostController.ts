@@ -30,16 +30,22 @@ export class PostController {
   }
   
   async getAll(req: Request, res: Response){
-     try {
-      
+    try {
+      const posts = await Post.find() 
+      return res.status(200).json(posts)
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
   }
   
   async getOne(req: Request, res: Response){
-     try {
-      
+    const { id } = req.params
+    try {
+      const post = await Post.findById(id)
+
+      if(!post) return res.status(404).json({ message: 'Post not found.' })
+
+      return res.json(post)
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
