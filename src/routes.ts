@@ -35,7 +35,13 @@ routes.get('/feed/:id',
 routes.patch('/feed/:id',
   postController.update)
 
-  routes.delete('/feed/:id',
+routes.delete('/feed/:id',
   postController.delete)
+
+routes.patch('/feed/:id/like',
+  postController.likePost)
+
+routes.patch('/feed/:id/comments',
+  postController.commentPost)
 
 export default routes

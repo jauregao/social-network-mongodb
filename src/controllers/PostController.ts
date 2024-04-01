@@ -6,7 +6,7 @@ import Post from '../models/Post'
 
 export class PostController {
 
-  async create(req: Request, res: Response){
+  async create(req: Request, res: Response): Promise<TPost | Object>{
     const postData = req.body as TPost
     if (!Types.ObjectId.isValid(postData.user_id)) return res.status(400).json({ message: 'Invalid user ID.' })
 
@@ -29,7 +29,7 @@ export class PostController {
     }
   }
   
-  async getAll(_: Request, res: Response){
+  async getAll(_: Request, res: Response): Promise<TPost[] | Object>{
     try {
       const posts = await Post.find() 
       return res.status(200).json(posts)
@@ -38,7 +38,7 @@ export class PostController {
     }
   }
   
-  async getOne(req: Request, res: Response){
+  async getOne(req: Request, res: Response): Promise<TPost | Object>{
     const { id } = req.params
     try {
       const post = await Post.findById(id)
@@ -51,7 +51,7 @@ export class PostController {
     }
   }
   
-  async update(req: Request, res: Response){
+  async update(req: Request, res: Response): Promise<void | Object>{
     const { id } = req.params
     const { description } = req.body
 
@@ -68,7 +68,7 @@ export class PostController {
     }
   }
   
-  async delete(req: Request, res: Response){
+  async delete(req: Request, res: Response): Promise<void | Object>{
     const { id } = req.params
 
     try {
@@ -84,17 +84,45 @@ export class PostController {
     }
   }
   
-  async like(req: Request, res: Response){
-     try {
-      
+  async likePost(req: Request, res: Response){
+    const { id } = req.params
+
+    try {
+      const post = await Post.findById(id)
+
+      if(!post) return res.status(404).json({ message: 'Post not found.' })
+
+      await Post.updateOne({ _id: id }, { 
+        $inc: {
+          likes: 1
+        }
+      })
+
+      return res.status(204).json()
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
   }
   
-  async comment(req: Request, res: Response){
-     try {
-      
+  async commentPost(req: Request, res: Response){
+    const { id } = req.params
+    const { description } = req.body
+
+    try {
+      const post = await Post.findById(id)
+
+      if(!post) return res.status(404).json({ message: 'Post not found.' })
+
+      await Post.updateOne({ _id: id }, { 
+        $push: { 
+          comments: {
+            _id: new Types.ObjectId(),
+            description
+          }
+        } 
+      })
+
+      return res.status(204).json()
     } catch (error) {
       return res.status(500).json({message: 'Internal Server Error'})
     }
