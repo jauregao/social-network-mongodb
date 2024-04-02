@@ -12,7 +12,7 @@ mongoose.connect(dbUri).then(() => {
   app.use(express.json())
   app.use(routes)
   
-  app.listen(process.env.APP_PORT)
+  app.listen(process.env.PORT)
 
 }).catch((error) => {
   console.log(error)
