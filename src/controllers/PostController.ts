@@ -3,6 +3,7 @@ import User from '../models/User'
 import { TPost } from './../types'
 import { Request, Response } from "express"
 import Post from '../models/Post'
+import { uploadFile } from '../services/upload'
 
 export class PostController {
 
@@ -11,14 +12,19 @@ export class PostController {
     if (!Types.ObjectId.isValid(postData.user_id)) return res.status(400).json({ message: 'Invalid user ID.' })
 
     try {
-
       const user = await User.findById(postData.user_id)
       if(!user) return res.status(404).json({ message: 'User not found.' })
+
+      const files = req.files as Express.Multer.File[]
       
+      const images = await Promise.all(files.map(async (file) => {
+        return await uploadFile(`posts/${file.originalname}`, file.buffer, file.mimetype)
+      }))
+
       const newPost = await Post.create({
         user_id: user._id,
         description: postData.description,
-        images: postData.images,
+        images,
         likes: [],
         comments: []
       })

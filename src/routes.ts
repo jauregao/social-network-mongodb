@@ -1,6 +1,7 @@
 import { PostController } from './controllers/PostController';
-import { Router } from "express"
 import { UserController } from "./controllers/UserController"
+import { Router } from "express"
+import multer from './middleware/multer';
 
 const routes = Router()
 const userController = new UserController()
@@ -24,6 +25,7 @@ routes.get('/users',
 
   /* post routes */
 routes.post('/feed',
+  multer.array('images'),
   postController.create)
 
 routes.get('/feed',
