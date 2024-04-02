@@ -9,6 +9,7 @@ const postController = new PostController()
 
   /* users routes */
 routes.post('/user',
+  multer.single('photo'),
   userController.create)
 
 routes.get('/user/:id',

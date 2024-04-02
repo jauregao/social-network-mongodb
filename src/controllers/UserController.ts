@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import User from "../models/User"
 import { TUser } from "../types"
 import { Types } from "mongoose"
+import { uploadFile } from "../services/upload"
 
 export class UserController {
 
@@ -73,11 +74,15 @@ export class UserController {
 
     if(existUserMailOrUsername) return res.status(400).json({messaage: 'User or email already exists.'})
 
+    const file = req.file as Express.Multer.File
+
+    const photo = await uploadFile(`profilepics/${file.originalname}`, file.buffer, file.mimetype)
+
     const newUser = await User.create({
       name: userData.name,
       email: userData.email,
       username: userData.username,
-      photo: userData.photo,
+      photo,
       description: userData.description,
       isActive: true,
       isVerified: false,
